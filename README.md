@@ -119,25 +119,6 @@ GET /api/summary/by-category → Category-wise summary
 
 GET /api/summary/by-day → Daily summary
 
-🎥 Demo Video
-👉 Demo Video Link Here (Upload your demo video to YouTube/Drive and paste the link)
 
 📜 License
 MIT License © 2025 Sumit Kumar
-
-yaml
-Copy code
-
----
-
-⚡ Next Step: You can also add **screenshots of your frontend dashboard & APIs** in the README for more impact.  
-
-Do you want me to also generate a **`.gitignore` file (Java + React)** so your `node_modules/` and `target/` don’t go to GitHub?
-
-
-
-
-
-
-
-Ask ChatGPT
