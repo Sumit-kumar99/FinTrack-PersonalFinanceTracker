@@ -49,36 +49,38 @@ Users can **register, log in, manage transactions (income & expenses), categoriz
 
 ---
 
-## ▶️ Getting Started
-
-### 1️⃣ Clone the Repo
+▶️ Getting Started
+1️⃣ Clone the Repo
 git clone https://github.com/Sumit-kumar99/FinTrack-PersonalFinanceTracker.git
 cd FinTrack-PersonalFinanceTracker
+
 2️⃣ Backend Setup
-bash
-Copy code
 cd backend
 mvn clean install
 mvn spring-boot:run
+
+
 Backend runs at: http://localhost:8080
 
 ✅ Update application.properties with your DB credentials.
 
 3️⃣ Frontend Setup
-bash
-Copy code
 cd frontend
 npm install
 npm run dev
+
+
 Frontend runs at: http://localhost:5173
 
 🔑 API Endpoints
 Auth
+
 POST /api/auth/register → Register new user
 
 POST /api/auth/authenticate → Login & get JWT
 
 Transactions
+
 POST /api/transactions → Add transaction
 
 GET /api/transactions?page=0&size=10 → Paginated list
@@ -86,6 +88,7 @@ GET /api/transactions?page=0&size=10 → Paginated list
 POST /api/transactions/upload-receipt → Upload receipt
 
 Summary
+
 GET /api/summary → Overall summary
 
 GET /api/summary/by-category → Category-wise summary
