@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrack API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>FinTrack API Connection Test</h1>
+    
+    <div class="container">
+        <h2>1. Test Backend Connection</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connectionResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>2. Register New User</h2>
+        <div class="form-group">
+            <label for="regUsername">Username:</label>
+            <input type="text" id="regUsername" value="testuser">
+        </div>
+        <div class="form-group">
+            <label for="regEmail">Email:</label>
+            <input type="email" id="regEmail" value="test@example.com">
+        </div>
+        <div class="form-group">
+            <label for="regPassword">Password:</label>
+            <input type="password" id="regPassword" value="password123">
+        </div>
+        <button onclick="registerUser()">Register</button>
+        <div id="registerResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>3. Login</h2>
+        <div class="form-group">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" value="testuser">
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" value="password123">
+        </div>
+        <button onclick="loginUser()">Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>4. Test Protected Endpoints</h2>
+        <button onclick="testSummary()" id="summaryBtn" disabled>Test Summary</button>
+        <button onclick="testTransactions()" id="transactionsBtn" disabled>Test Transactions</button>
+        <button onclick="testCategories()" id="categoriesBtn" disabled>Test Categories</button>
+        <div id="protectedResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>5. Add Test Transaction</h2>
+        <div class="form-group">
+            <label for="transDescription">Description:</label>
+            <input type="text" id="transDescription" value="Test transaction">
+        </div>
+        <div class="form-group">
+            <label for="transAmount">Amount:</label>
+            <input type="number" id="transAmount" value="100.50" step="0.01">
+        </div>
+        <div class="form-group">
+            <label for="transType">Type:</label>
+            <select id="transType">
+                <option value="EXPENSE">Expense</option>
+                <option value="INCOME">Income</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="transCategoryId">Category ID:</label>
+            <input type="number" id="transCategoryId" value="1">
+        </div>
+        <div class="form-group">
+            <label for="transDate">Date:</label>
+            <input type="date" id="transDate">
+        </div>
+        <button onclick="addTransaction()" id="addTransBtn" disabled>Add Transaction</button>
+        <div id="transactionResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        let authToken = null;
+
+        // Set today's date as default
+        document.getElementById('transDate').value = new Date().toISOString().split('T')[0];
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+        }
+
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                return { success: response.ok, status: response.status, data };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function testConnection() {
+            showResult('connectionResult', 'Testing connection...', 'info');
+            
+            const result = await makeRequest(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: 'connection_test',
+                    email: 'test@connection.com',
+                    password: 'test123'
+                })
+            });
+
+            if (result.success) {
+                showResult('connectionResult', '✅ Backend is running and responding!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+            } else if (result.status === 400) {
+                showResult('connectionResult', '⚠️ Backend is running but user might already exist\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'info');
+            } else {
+                showResult('connectionResult', '❌ Backend connection failed\n\nError: ' + JSON.stringify(result, null, 2), 'error');
+            }
+        }
+
+        async function registerUser() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            showResult('registerResult', 'Registering user...', 'info');
+
+            const result = await makeRequest(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                body: JSON.stringify({ username, email, password })
+            });
+
+            if (result.success) {
+                showResult('registerResult', '✅ User registered successfully!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+                authToken = result.data.token;
+                enableProtectedButtons();
+            } else {
+                showResult('registerResult', '❌ Registration failed\n\nError: ' + JSON.stringify(result.data, null, 2), 'error');
+            }
+        }
+
+        async function loginUser() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            showResult('loginResult', 'Logging in...', 'info');
+
+            const result = await makeRequest(`${API_BASE_URL}/auth/authenticate`, {
+                method: 'POST',
+                body: JSON.stringify({ username, password })
+            });
+
+            if (result.success) {
+                showResult('loginResult', '✅ Login successful!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+                authToken = result.data.token;
+                enableProtectedButtons();
+            } else {
+                showResult('loginResult', '❌ Login failed\n\nError: ' + JSON.stringify(result.data, null, 2), 'error');
+            }
+        }
+
+        function enableProtectedButtons() {
+            document.getElementById('summaryBtn').disabled = false;
+            document.getElementById('transactionsBtn').disabled = false;
+            document.getElementById('categoriesBtn').disabled = false;
+            document.getElementById('addTransBtn').disabled = false;
+        }
+
+        async function testSummary() {
+            if (!authToken) {
+                showResult('protectedResult', '❌ Please login first', 'error');
+                return;
+            }
+
+            showResult('protectedResult', 'Testing summary endpoint...', 'info');
+
+            const result = await makeRequest(`${API_BASE_URL}/summary`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (result.success) {
+                showResult('protectedResult', '✅ Summary endpoint working!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+            } else {
+                showResult('protectedResult', '❌ Summary endpoint failed\n\nError: ' + JSON.stringify(result.data, null, 2), 'error');
+            }
+        }
+
+        async function testTransactions() {
+            if (!authToken) {
+                showResult('protectedResult', '❌ Please login first', 'error');
+                return;
+            }
+
+            showResult('protectedResult', 'Testing transactions endpoint...', 'info');
+
+            const result = await makeRequest(`${API_BASE_URL}/transactions?page=0&size=10`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (result.success) {
+                showResult('protectedResult', '✅ Transactions endpoint working!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+            } else {
+                showResult('protectedResult', '❌ Transactions endpoint failed\n\nError: ' + JSON.stringify(result.data, null, 2), 'error');
+            }
+        }
+
+        async function testCategories() {
+            if (!authToken) {
+                showResult('protectedResult', '❌ Please login first', 'error');
+                return;
+            }
+
+            showResult('protectedResult', 'Testing categories endpoint...', 'info');
+
+            const result = await makeRequest(`${API_BASE_URL}/categories`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (result.success) {
+                showResult('protectedResult', '✅ Categories endpoint working!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+            } else {
+                showResult('protectedResult', '❌ Categories endpoint failed\n\nError: ' + JSON.stringify(result.data, null, 2), 'error');
+            }
+        }
+
+        async function addTransaction() {
+            if (!authToken) {
+                showResult('transactionResult', '❌ Please login first', 'error');
+                return;
+            }
+
+            const description = document.getElementById('transDescription').value;
+            const amount = parseFloat(document.getElementById('transAmount').value);
+            const type = document.getElementById('transType').value;
+            const categoryId = parseInt(document.getElementById('transCategoryId').value);
+            const date = document.getElementById('transDate').value;
+
+            showResult('transactionResult', 'Adding transaction...', 'info');
+
+            const result = await makeRequest(`${API_BASE_URL}/transactions`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({
+                    description,
+                    amount,
+                    type,
+                    categoryId,
+                    date
+                })
+            });
+
+            if (result.success) {
+                showResult('transactionResult', '✅ Transaction added successfully!\n\nResponse: ' + JSON.stringify(result.data, null, 2), 'success');
+            } else {
+                showResult('transactionResult', '❌ Transaction creation failed\n\nError: ' + JSON.stringify(result.data, null, 2), 'error');
+            }
+        }
+    </script>
+</body>
+</html>
