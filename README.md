@@ -35,25 +35,26 @@ Users can **register, log in, manage transactions (income & expenses), categoriz
 ---
 
 ## 🏗️ Project Structure
-FinTrack-PersonalFinanceTracker/
-│── backend/ # Spring Boot backend (Java)
-│ ├── src/main/java/com/sumit/finance/
-│ │ ├── controller/ # REST controllers
-│ │ ├── service/ # Business logic
-│ │ ├── model/ # Entities (User, Transaction, Category)
-│ │ ├── repository/ # Spring Data JPA Repos
-│ │ └── security/ # JWT & Security config
-│ └── pom.xml # Maven config
 
-│── frontend/ # React frontend (Vite + Tailwind)
-│ ├── src/
-│ │ ├── components/ # UI components
-│ │ ├── App.jsx # Main React app
-│ │ └── index.jsx # Entry point
-│ ├── package.json
-│ └── vite.config.js
+FinTrack-PersonalFinanceTracker
+   backend/ # Spring Boot backend (Java)
+     src/main/java/com/sumit/finance/
+        controller/ # REST controllers
+        service/ # Business logic
+        model/ # Entities (User, Transaction, Category)
+        repository/ # Spring Data JPA Repos
+        security/ # JWT & Security config
+      pom.xml # Maven config
 
-│── README.md
+  frontend/ # React frontend (Vite + Tailwind)
+    src/
+      components/ # UI components
+      App.jsx # Main React app
+      index.jsx # Entry point
+      package.json
+      vite.config.js
+
+  README.md
 
 yaml
 Copy code
@@ -78,7 +79,6 @@ Copy code
 ## ▶️ Getting Started
 
 ### 1️⃣ Clone the Repo
-```bash
 git clone https://github.com/Sumit-kumar99/FinTrack-PersonalFinanceTracker.git
 cd FinTrack-PersonalFinanceTracker
 2️⃣ Backend Setup
